@@ -8,7 +8,7 @@ class DashboardScreen extends StatefulWidget {
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState  extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
   final List<Map<String, dynamic>> todayStats = [

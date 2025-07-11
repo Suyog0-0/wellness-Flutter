@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "543626402154",
+    "project_id": "wellness-32bf1",
+    "storage_bucket": "wellness-32bf1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543626402154:android:fa31aaf0b2b3fd9217ad13",
+        "android_client_info": {
+          "package_name": "com.example.wellness"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "543626402154-i1b8vkqo09ecrk1f7n7amu9lt21q3ock.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCabv4XiR3RVYSYDt81WD5LedRIgDUXU5A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "543626402154-i1b8vkqo09ecrk1f7n7amu9lt21q3ock.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
