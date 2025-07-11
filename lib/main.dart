@@ -3,12 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'screens/login_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -64,7 +62,7 @@ class MyApp extends StatelessWidget {
             ),
             hoverColor: Colors.transparent,
           ),
-          home: const LoginScreen(),
+          home: LoginScreen(),
           debugShowCheckedModeBanner: false,
         );
       },
