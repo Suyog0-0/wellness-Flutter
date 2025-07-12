@@ -209,8 +209,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
-                    ),~
-                  ),
+                    ),
+                  )
                 ],
               ),
             ],
