@@ -8,8 +8,9 @@ class DashboardScreen extends StatefulWidget {
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState  extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
+  int _currentQuoteIndex = 0;
 
   final List<Map<String, dynamic>> todayStats = [
     {'title': 'Steps', 'value': '8,432', 'icon': Icons.directions_walk, 'color': Colors.blue},
@@ -21,7 +22,7 @@ class _DashboardScreenState  extends State<DashboardScreen> {
   final List<Map<String, String>> motivationalQuotes = [
     {
       'quote': 'Take care of your body. It\'s the only place you have to live.',
-      'author': 'Jim Ryan'
+      'author': 'Jim Rohn'
     },
     {
       'quote': 'Health is not about the weight you lose, but about the life you gain.',
@@ -31,7 +32,33 @@ class _DashboardScreenState  extends State<DashboardScreen> {
       'quote': 'Your body can stand almost anything. It\'s your mind you have to convince.',
       'author': 'Unknown'
     },
+    {
+      'quote': 'The groundwork for all happiness is good health.',
+      'author': 'Leigh Hunt'
+    },
+    {
+      'quote': 'To keep the body in good health is a duty... otherwise we shall not be able to keep our mind strong and clear.',
+      'author': 'Buddha'
+    },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-rotate quotes every 5 seconds
+    _startQuoteRotation();
+  }
+
+  void _startQuoteRotation() {
+    Future.delayed(Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          _currentQuoteIndex = (_currentQuoteIndex + 1) % motivationalQuotes.length;
+        });
+        _startQuoteRotation();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +221,7 @@ class _DashboardScreenState  extends State<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => QuotesDetailScreen(),
+                      builder: (context) => QuotesDetailScreen(quotes: motivationalQuotes),
                     ),
                   );
                 },
@@ -207,41 +234,104 @@ class _DashboardScreenState  extends State<DashboardScreen> {
           ),
           SizedBox(height: 16.h),
 
-          // Quote Card
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20.w),
-            decoration: BoxDecoration(
-              color: Color(0xFF262626),
-              borderRadius: BorderRadius.circular(12.r),
+          // Quote Card with animated transition
+          AnimatedSwitcher(
+            duration: Duration(milliseconds: 500),
+            child: _buildQuoteCard(motivationalQuotes[_currentQuoteIndex]),
+          ),
+          SizedBox(height: 20.h),
+
+          // Quote indicators
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              motivationalQuotes.length,
+                  (index) => Container(
+                margin: EdgeInsets.symmetric(horizontal: 4.w),
+                height: 6.h,
+                width: _currentQuoteIndex == index ? 16.w : 6.w,
+                decoration: BoxDecoration(
+                  color: _currentQuoteIndex == index ? Colors.white : Colors.grey,
+                  borderRadius: BorderRadius.circular(3.r),
+                ),
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.format_quote,
-                  size: 24.w,
-                  color: Colors.white,
+          ),
+          SizedBox(height: 20.h),
+
+          // Manual navigation buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _currentQuoteIndex = (_currentQuoteIndex - 1 + motivationalQuotes.length) % motivationalQuotes.length;
+                  });
+                },
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _currentQuoteIndex = (_currentQuoteIndex + 1) % motivationalQuotes.length;
+                  });
+                },
+                icon: Icon(Icons.arrow_forward, color: Colors.white),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuoteCard(Map<String, String> quote) {
+    return Container(
+      key: ValueKey(quote['quote']),
+      width: double.infinity,
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: Color(0xFF262626),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.format_quote,
+                size: 24.w,
+                color: Colors.white,
+              ),
+              Spacer(),
+              Text(
+                '${_currentQuoteIndex + 1}/${motivationalQuotes.length}',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: Colors.grey,
                 ),
-                SizedBox(height: 12.h),
-                Text(
-                  motivationalQuotes[0]['quote']!,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.white,
-                    fontStyle: FontStyle.italic,
-                    height: 1.5,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                Text(
-                  '— ${motivationalQuotes[0]['author']}',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            quote['quote'] ?? '',
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: Colors.white,
+              fontStyle: FontStyle.italic,
+              height: 1.5,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            '— ${quote['author'] ?? 'Unknown'}',
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.grey,
             ),
           ),
         ],
@@ -286,4 +376,5 @@ class _DashboardScreenState  extends State<DashboardScreen> {
         ),
       ),
     );
-  }}
+  }
+}

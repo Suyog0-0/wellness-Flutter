@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class QuotesDetailScreen extends StatefulWidget {
+  final List<Map<String, String>> quotes;
+
+  const QuotesDetailScreen({Key? key, required this.quotes}) : super(key: key);
+
   @override
   _QuotesDetailScreenState createState() => _QuotesDetailScreenState();
 }
@@ -10,48 +14,11 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  final List<Map<String, String>> quotes = [
-    {
-      'quote': 'Take care of your body. It\'s the only place you have to live.',
-      'author': 'Jim Rohn',
-      'category': 'Health'
-    },
-    {
-      'quote': 'Health is not about the weight you lose, but about the life you gain.',
-      'author': 'Dr. Josh Axe',
-      'category': 'Wellness'
-    },
-    {
-      'quote': 'Your body can stand almost anything. It\'s your mind you have to convince.',
-      'author': 'Unknown',
-      'category': 'Motivation'
-    },
-    {
-      'quote': 'The groundwork for all happiness is good health.',
-      'author': 'Leigh Hunt',
-      'category': 'Happiness'
-    },
-    {
-      'quote': 'To keep the body in good health is a duty... otherwise we shall not be able to keep our mind strong and clear.',
-      'author': 'Buddha',
-      'category': 'Mindfulness'
-    },
-    {
-      'quote': 'A healthy outside starts from the inside.',
-      'author': 'Robert Urich',
-      'category': 'Health'
-    },
-    {
-      'quote': 'The best time to plant a tree was 20 years ago. The second best time is now.',
-      'author': 'Chinese Proverb',
-      'category': 'Motivation'
-    },
-    {
-      'quote': 'What we think, we become.',
-      'author': 'Buddha',
-      'category': 'Mindfulness'
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    print('Quotes received: ${widget.quotes}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +49,7 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                quotes.length,
+                widget.quotes.length,
                     (index) => AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   margin: EdgeInsets.symmetric(horizontal: 4.w),
@@ -106,9 +73,17 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
                   _currentIndex = index;
                 });
               },
-              itemCount: quotes.length,
+              itemCount: widget.quotes.isNotEmpty ? widget.quotes.length : 1,
               itemBuilder: (context, index) {
-                return _buildQuoteCard(quotes[index]);
+                if (widget.quotes.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No quotes available.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
+                return _buildQuoteCard(widget.quotes[index]);
               },
             ),
           ),
@@ -144,9 +119,11 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      _shareQuote(quotes[_currentIndex]);
-                    },
+                    onPressed: widget.quotes.isNotEmpty
+                        ? () {
+                      _shareQuote(widget.quotes[_currentIndex]);
+                    }
+                        : null,
                     icon: Icon(
                       Icons.share,
                       color: Colors.white,
@@ -157,7 +134,7 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
 
                 // Next Button
                 IconButton(
-                  onPressed: _currentIndex < quotes.length - 1
+                  onPressed: _currentIndex < widget.quotes.length - 1
                       ? () {
                     _pageController.nextPage(
                       duration: Duration(milliseconds: 300),
@@ -167,7 +144,9 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
                       : null,
                   icon: Icon(
                     Icons.arrow_forward,
-                    color: _currentIndex < quotes.length - 1 ? Colors.white : Colors.grey,
+                    color: _currentIndex < widget.quotes.length - 1
+                        ? Colors.white
+                        : Colors.grey,
                     size: 28.w,
                   ),
                 ),
@@ -191,24 +170,6 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Category Badge
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text(
-              quote['category']!,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: Colors.white70,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          SizedBox(height: 40.h),
-
           // Quote Icon
           Icon(
             Icons.format_quote,
@@ -219,7 +180,7 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
 
           // Quote Text
           Text(
-            quote['quote']!,
+            quote['quote'] ?? '',
             style: TextStyle(
               fontSize: 22.sp,
               color: Colors.white,
@@ -232,7 +193,7 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
 
           // Author
           Text(
-            '— ${quote['author']}',
+            '— ${quote['author'] ?? 'Unknown'}',
             style: TextStyle(
               fontSize: 16.sp,
               color: Colors.white70,
@@ -313,14 +274,14 @@ class _QuotesDetailScreenState extends State<QuotesDetailScreen> {
   }
 
   void _shareQuote(Map<String, String> quote) {
-    final shareText = '${quote['quote']}\n\n— ${quote['author']}';
+    final shareText = '${quote['quote'] ?? ''}\n\n— ${quote['author'] ?? 'Unknown'}';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Quote ready to share!'),
         action: SnackBarAction(
           label: 'Share',
           onPressed: () {
-            // In a real app, you would use share_plus package
+            // Use share_plus in real app
             print('Sharing: $shareText');
           },
         ),
